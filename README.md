@@ -4,7 +4,7 @@ A demo smart contract for document review on Ethereum
 
 Step for test(locally):
 
-1. Install Node.js
+1. Install Node.js (for npm, npm version 5.1.0 or above is needed for following steps)
 
 2. Download the repo
 
