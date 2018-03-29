@@ -1,5 +1,20 @@
 pragma solidity^0.4.17;
 
+contract Documents {
+
+    address[] public publishedDocuments;
+
+    function createDocument(string initDocHash) public {
+        address newDocument = new Document(initDocHash);
+        publishedDocuments.push(newDocument);
+    }
+
+    function getPublishedDocuments() public view returns (address[]) {
+        return publishedDocuments;
+    }
+
+}
+
 contract Document {
 
     address public owner; //owner of the article
