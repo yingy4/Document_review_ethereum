@@ -4,8 +4,8 @@ const Web3 = require('web3');
 const provider = ganache.provider();
 const web3 = new Web3(provider);
 
-const compiledDocuments = require('../build/Documents.json');
-const compiledDocument = require('../build/Document.json');
+const compiledDocuments = require('../src/build/Documents.json');
+const compiledDocument = require('../src/build/Document.json');
 
 let accts;
 let documents;
