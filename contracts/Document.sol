@@ -69,6 +69,11 @@ contract Document {
         return reviews[reviewers[i]];
     }
 
+    //getAllReviewersAddresses
+    function getReviewers() public view returns (address[]) {
+        return reviewers;
+    }
+
     modifier canReview() {
         require(reviewable);
         _;

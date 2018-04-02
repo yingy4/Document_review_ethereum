@@ -13,7 +13,13 @@ class App extends Component {
         reviewMessage: '',
         message: '',
         doc: 'Hello World!',
-        isDocVerify: ''
+        isDocVerify: '',
+        reviewers: [],
+        reviews: [],
+        zipped: [],
+        reviewContent: [],
+        isReviewVerify: [],
+        buttonEnable: true
     };
 
 
@@ -26,17 +32,28 @@ class App extends Component {
         const docHashEth = await document.methods.docHash().call();
         console.log('docHashEth:'+docHashEth);
         const isDocVerify = (docHashLocal === docHashEth).toString();
-        this.setState({ owner, docHash, reviewNumber, isDocVerify });
+        const reviewers = await document.methods.getReviewers().call();
+        console.log('reviewers:'+reviewers);
+        const reviews = await Promise.all(reviewers.map(async address => await document.methods.getReviewByAddress(address).call()));
+        console.log('reviews:'+reviews);
+        const zipped = reviewers.map(function(address, i) {
+            return [address, reviews[i]];
+        });
+        console.log(zipped);
+        this.setState({ owner, docHash, reviewNumber, isDocVerify, reviewers, reviews, zipped });
 
     }
 
     onSubmitReview = async (event) => {
         event.preventDefault();
+        this.setState({ buttonEnable: false });
         const accts = await web3.eth.getAccounts();
         this.setState({ message: 'Waiting for transaction success...'});
         const reviewHash = createKeccakHash('keccak256').update(this.state.reviewMessage).digest('hex');
         await document.methods.review(reviewHash).send({ from: accts[0] });
         this.setState({ message: 'You successfully submit a review!'});
+        this.setState({ buttonEnable: true });
+        window.location.reload();
     };
 
     onChangeVerifyDoc = async (event) => {
@@ -48,6 +65,17 @@ class App extends Component {
         console.log('docHashEth:'+docHashEth);
         this.setState({ isDocVerify: (docHashLocal === docHashEth).toString()});
     };
+
+    renderReviews() {
+       return this.state.zipped.map(function(a) {
+              return (
+                  <React.Fragment>
+                  <li key={a[0]}>reviewer address:{a[0]}, reviewHash:{a[1]}</li>
+                  </React.Fragment>
+              );
+            }
+        );
+    }
 
 
   render() {
@@ -81,10 +109,17 @@ class App extends Component {
                         onChange={event => this.setState({ reviewMessage: event.target.value})}
                     />
                 </div>
-                <button>Post</button>
+                <button disabled={!this.state.buttonEnable}>Post</button>
             </form>
             <hr/>
+
+            <h4>All reviews:</h4>
+            {this.renderReviews()}
+
+            <hr/>
             <h1>{this.state.message}</h1>
+
+
         </div>
     );
   }

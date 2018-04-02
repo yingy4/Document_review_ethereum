@@ -120,4 +120,13 @@ describe('Document', () => {
         assert.equal(review2, 'OPQ');
     });
 
+    it('should get all reviewers addresses',async () => {
+        await document.methods.review('XYZ').send({ from: accts[0]});
+        await document.methods.review('OPQ').send({ from: accts[1]});
+        const reviewers = await document.methods.getReviewers().call();
+        assert.equal(reviewers.length, 2);
+        assert.equal(reviewers[0], accts[0]);
+        assert.equal(reviewers[1], accts[1]);
+    });
+
 });
